@@ -19,3 +19,9 @@ requests
 chromadb
 jinja2
 aiofiles
+beautifulsoup4
+duckduckgo-search
+# Google Workspace (Executive Assistant Agent)
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
