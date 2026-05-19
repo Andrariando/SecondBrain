@@ -1,37 +1,48 @@
 # Antigravity Second Brain 🧠
 
-A comprehensive, local-first agentic "Second Brain" system designed to capture, classify, and instantly retrieve your knowledge. It integrates a WhatsApp conversational agent with a premium, high-tech Web Dashboard built on FastAPI.
+A comprehensive, local-first Multi-Agent "Second Brain" system designed to capture, classify, and instantly retrieve your knowledge. It integrates a WhatsApp conversational agent powered by an autonomous LangGraph agent team with a premium, high-tech Web Dashboard.
 
-## Key Features
+## 🚀 Tech Stack
 
-### 1. WhatsApp Agent (LangGraph)
-- **Natural Language Processing:** Send unstructured thoughts, ideas, or to-dos directly to your WhatsApp bot.
-- **Agentic Routing:** Uses a `LangGraph` state graph to dynamically classify incoming messages into Action Items, Ideas, or Knowledge Notes.
-- **Live Internet Search:** The bot automatically cross-references your queries using DuckDuckGo to provide real-time information.
-
-### 2. Document Intelligence & RAG
-- **PDF Uploads:** Upload massive documents (like Interview Guides or Textbooks) directly to the Web Dashboard.
-- **Vector Database (ChromaDB):** Documents are automatically sliced into chunks and converted into mathematical vectors stored locally.
-- **Retrieval-Augmented Generation (RAG):** When you ask the chatbot a question, it searches your local `ChromaDB` Wiki first, injecting your personal notes into its prompt to provide highly accurate, customized answers.
-
-### 3. Premium Web Dashboard
-- **Wikipedia-Style Viewing:** A dedicated split-screen UI that allows you to read beautiful AI-generated markdown summaries right alongside the original PDF document.
-- **High-Tech Aesthetics:** Built with custom glassmorphism, neon glows, cyber-scrollbars, and smooth CSS fade-in animations for a state-of-the-art UI experience.
-- **Local-First:** All data (SQLite DB, ChromaDB vectors, and PDF uploads) is stored securely on your local machine (`/storage`).
+- **Backend:** FastAPI, Python 3.11+
+- **AI Orchestration:** LangGraph & LangChain (Multi-Agent ReAct Architecture)
+- **Vector Database:** ChromaDB (Local RAG)
+- **Relational Database:** SQLite (SQLAlchemy ORM)
+- **Frontend:** Vanilla JS, HTML5, CSS3 (Glassmorphism, CSS Micro-animations)
+- **Search & Scraping:** DuckDuckGo-Search, BeautifulSoup4
+- **Messaging:** Meta WhatsApp Cloud API
 
 ---
 
-## Prerequisites
+## 🤖 The Multi-Agent Architecture
 
-- Python 3.11+
-- Ngrok (for local webhook testing with WhatsApp)
-- Meta WhatsApp Cloud API credentials
-- OpenAI API Key
+The core of the system is no longer a rigid state machine. It is a fully autonomous **Multi-Agent System (MAS)** where specialized AI agents collaborate to fulfill your complex WhatsApp requests:
 
-## Installation
+1. **👔 The Supervisor:** The master router. It reads your incoming WhatsApp messages and delegates work to the specialized workers below. 
+2. **📚 The Librarian:** The Wiki specialist. Equipped with a `search_wiki` tool to query your local ChromaDB for context from your uploaded PDFs.
+3. **🌐 The Researcher:** The Internet crawler. Equipped with `search_web` and `scrape_website` tools to find breaking news via DuckDuckGo and autonomously read full web articles.
+4. **📋 The Project Manager:** The Data Entry expert. Equipped with `save_action_item`, `save_idea`, `get_pending_tasks`, and `search_ideas` tools to seamlessly read and write directly to your SQLite database.
+5. **📊 The Analyst:** The math and logic specialist. Equipped with an isolated `run_python` sandbox tool to write and execute python code for 100% mathematically flawless calculations and data analysis.
 
-1. **Clone or Enter the Directory:**
-   Navigate into the `second-brain-agent` project directory.
+---
+
+## 💻 Premium Web Dashboard
+
+- **Split-Screen Wiki Viewing:** Read beautiful AI-generated markdown summaries right alongside the original embedded PDF document.
+- **Dynamic Search & Filtering:** A high-tech search bar instantly filters your Knowledge Base and Action Items across titles and content.
+- **Source Traceability:** Every memory card contains a source badge linking it back to the exact PDF it was generated from.
+- **High-Tech Aesthetics:** Built with custom glassmorphism, neon glows, cyber-scrollbars, and smooth CSS fade-in animations for a state-of-the-art UI experience.
+- **Local-First Privacy:** All data (SQLite DB, ChromaDB vectors, and PDF uploads) is stored securely on your local machine (`/storage`).
+
+---
+
+## ⚙️ Installation & Setup
+
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/Andrariando/SecondBrain.git
+   cd SecondBrain/second-brain-agent
+   ```
 
 2. **Activate the Virtual Environment:**
    ```bash
@@ -43,7 +54,6 @@ A comprehensive, local-first agentic "Second Brain" system designed to capture, 
    ```
 
 3. **Install Dependencies:**
-   Install core requirements including FastAPI, LangGraph, ChromaDB, and DuckDuckGo-Search.
    ```bash
    pip install -r requirements.txt
    ```
@@ -51,7 +61,7 @@ A comprehensive, local-first agentic "Second Brain" system designed to capture, 
 4. **Environment Variables:**
    Rename `.env.example` to `.env` and fill in your API keys (OpenAI, WhatsApp tokens).
 
-## Running the Application Locally
+## 🏃 Running the Application
 
 1. **Start the FastAPI Server:**
    ```bash
@@ -60,20 +70,8 @@ A comprehensive, local-first agentic "Second Brain" system designed to capture, 
    *Access the Web Dashboard at `http://localhost:8000`*
 
 2. **Expose Localhost for WhatsApp Webhook:**
-   Run ngrok in a separate terminal to expose your local server to Meta's WhatsApp servers:
+   Run ngrok in a separate terminal:
    ```bash
    ngrok http 8000
    ```
-   Copy the `https://...ngrok-free.app` URL and configure your Meta WhatsApp Webhook to point to `https://<ngrok-url>/webhook/whatsapp`.
-
----
-
-## Architecture
-
-- **`app/main.py`**: The FastAPI application handling the Web Dashboard and static file serving.
-- **`app/graph.py`**: The LangGraph state machine orchestrating the chatbot's decision making.
-- **`app/routers/whatsapp_router.py`**: The webhook endpoint receiving messages from Meta.
-- **`app/routers/upload_router.py`**: Handles PDF ingestion, AI summarization, and ChromaDB embedding.
-- **`app/nodes/research.py`**: The intelligence node executing dual-searches against your local Wiki (`ChromaDB`) and the Live Web (`DuckDuckGo`).
-- **`app/vector_db.py`**: Manages the persistent local ChromaDB instance.
-- **`templates/` & `static/`**: HTML/CSS/JS for the premium Web Dashboard.
+   Configure your Meta WhatsApp Webhook to point to `https://<ngrok-url>/whatsapp`.
