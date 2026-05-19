@@ -3,60 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Second Brain Wiki</title>
+    <title>Second Brain — AI Knowledge OS</title>
+    <meta name="description" content="Your autonomous AI-powered Second Brain: capture, connect, and retrieve knowledge effortlessly.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="/static/index.css">
 </head>
 <body>
 
+<!-- Animated Background Orbs -->
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+<div class="bg-orb orb-3"></div>
+
+<!-- Sidebar -->
 <div class="sidebar">
-    <h2>Second Brain</h2>
-    <div class="nav-item active" onclick="loadView('dashboard')">Dashboard</div>
-    <div class="nav-item" onclick="loadView('knowledge')">Knowledge Wiki</div>
-    <div class="nav-item" onclick="loadView('chat')">Chat History</div>
-    <div class="nav-item" onclick="loadView('action_item')">Action Items</div>
-    <div class="nav-item" onclick="loadView('idea')">Ideas</div>
-    <div class="nav-item" onclick="loadView('upload')">Upload Document</div>
+    <div class="sidebar-brand">
+        <div class="brand-icon">🧠</div>
+        <div class="brand-text">
+            <div class="brand-name">Second Brain</div>
+            <div class="brand-sub">AI Knowledge OS</div>
+        </div>
+    </div>
+
+    <div class="nav-section-label">WORKSPACE</div>
+    <div class="nav-item active" id="nav-dashboard" onclick="loadView('dashboard')">
+        <span class="nav-icon">⚡</span> Dashboard
+    </div>
+    <div class="nav-item" id="nav-knowledge" onclick="loadView('knowledge')">
+        <span class="nav-icon">📚</span> Knowledge Wiki
+    </div>
+    <div class="nav-item" id="nav-action_item" onclick="loadView('action_item')">
+        <span class="nav-icon">✅</span> Action Items
+    </div>
+    <div class="nav-item" id="nav-idea" onclick="loadView('idea')">
+        <span class="nav-icon">💡</span> Ideas
+    </div>
+    <div class="nav-item" id="nav-chat" onclick="loadView('chat')">
+        <span class="nav-icon">💬</span> Chat History
+    </div>
+
+    <div class="nav-section-label" style="margin-top: 1rem;">TOOLS</div>
+    <div class="nav-item" id="nav-upload" onclick="loadView('upload')">
+        <span class="nav-icon">⬆️</span> Upload Document
+    </div>
+
+    <div class="sidebar-footer">
+        <div class="agent-status">
+            <div class="status-dot"></div>
+            <span>Agents Online</span>
+        </div>
+    </div>
 </div>
 
+<!-- Main Content -->
 <div class="main-content">
-    
+
     <!-- Dashboard View -->
     <div id="view-dashboard" class="view-section">
-        <h1 style="margin-bottom: 2rem;">Overview</h1>
-        <div class="stats-grid" id="stats-container">
-            <!-- Populated via JS -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Overview</h1>
+                <p class="page-subtitle">Your knowledge universe at a glance</p>
+            </div>
+            <div class="header-time" id="header-time"></div>
         </div>
-        <h2 style="margin-bottom: 1.5rem;">Recent Activity</h2>
-        <div class="memories-grid" id="recent-memories">
-            <!-- Populated via JS -->
-        </div>
+        <div class="stats-grid" id="stats-container"></div>
+        <h2 class="section-title">Recent Activity</h2>
+        <div class="memories-grid" id="recent-memories"></div>
     </div>
 
     <!-- Filtered Views -->
     <div id="view-filtered" class="view-section hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h1 id="filtered-title" style="margin: 0; text-transform: capitalize;">Wiki</h1>
-            <input type="text" id="search-input" placeholder="Search..." onkeyup="filterMemories()" style="padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(30, 41, 59, 0.4); color: white; width: 300px; backdrop-filter: blur(12px); outline: none;">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title" id="filtered-title">Wiki</h1>
+                <p class="page-subtitle" id="filtered-subtitle">Browse your captured knowledge</p>
+            </div>
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Search memories..." onkeyup="filterMemories()">
+            </div>
         </div>
-        <div class="memories-grid" id="filtered-memories">
-            <!-- Populated via JS -->
-        </div>
+        <div class="memories-grid" id="filtered-memories"></div>
     </div>
 
     <!-- Upload View -->
     <div id="view-upload" class="view-section hidden">
-        <h1 style="margin-bottom: 2rem;">Upload Knowledge</h1>
-        <div class="upload-section">
-            <h3 style="margin-top: 0">Upload a PDF or Text Document</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 2rem;">The AI will automatically read, extract text, summarize, and categorize your document into the knowledge base.</p>
-            <input type="file" id="file-input" accept=".pdf,.txt,.md" style="margin-bottom: 1rem;">
-            <br>
-            <button class="upload-btn" onclick="uploadFile()">Upload & Process</button>
-            <p id="upload-status" style="margin-top: 1rem; font-weight: 500;"></p>
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Upload Knowledge</h1>
+                <p class="page-subtitle">Feed your Second Brain new documents</p>
+            </div>
+        </div>
+        <div class="upload-section" id="upload-drop-zone">
+            <div class="upload-icon">📄</div>
+            <h3 class="upload-title">Drop a PDF or Text Document</h3>
+            <p class="upload-desc">The AI will automatically extract, summarize, and categorize it into your Knowledge Wiki. Supports <strong>.pdf</strong>, <strong>.txt</strong>, <strong>.md</strong></p>
+            <input type="file" id="file-input" accept=".pdf,.txt,.md">
+            <button class="upload-btn" onclick="uploadFile()">
+                <span>⬆</span> Upload & Process with AI
+            </button>
+            <p id="upload-status" style="margin-top: 1.5rem; font-weight: 500;"></p>
         </div>
     </div>
 
@@ -64,20 +114,16 @@
     <div id="view-article" class="view-section hidden article-view-container">
         <div class="article-header">
             <div style="display: flex; align-items: center; gap: 1rem;">
-                <button class="back-btn" onclick="closeArticle()">&larr; Back to Wiki</button>
+                <button class="back-btn" onclick="closeArticle()">← Back</button>
                 <span id="article-type" class="memory-type"></span>
-                <span id="article-date" style="color: var(--text-secondary); font-size: 0.875rem;"></span>
+                <span id="article-date" style="color: var(--text-muted); font-size: 0.875rem;"></span>
             </div>
         </div>
-        
         <div class="split-layout" id="article-split-layout">
-            <!-- Left Pane: Markdown -->
             <div class="article-pane markdown-pane">
-                <h1 id="article-title" class="modal-title" style="margin-top: 1rem;"></h1>
+                <h1 id="article-title" class="modal-title"></h1>
                 <div id="article-body" class="markdown-body"></div>
             </div>
-            
-            <!-- Right Pane: PDF Embed -->
             <div class="article-pane pdf-pane" id="pdf-pane">
                 <iframe id="pdf-iframe" src="" style="width: 100%; height: 100%; border: none; border-radius: 8px; background: white;"></iframe>
             </div>
