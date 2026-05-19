@@ -28,3 +28,20 @@ def send_whatsapp_message(to_phone: str, message: str):
         raise e
         
     return response.json()
+def download_whatsapp_media(media_id: str) -> bytes:
+    WHATSAPP_ACCESS_TOKEN = os.getenv("WHATSAPP_ACCESS_TOKEN")
+    
+    # 1. Get the media URL from the ID
+    headers = {"Authorization": f"Bearer {WHATSAPP_ACCESS_TOKEN}"}
+    url_req = requests.get(f"https://graph.facebook.com/v20.0/{media_id}", headers=headers)
+    url_req.raise_for_status()
+    
+    media_url = url_req.json().get("url")
+    if not media_url:
+        raise ValueError("Could not retrieve media URL from Meta.")
+        
+    # 2. Download the actual binary media using the URL
+    media_req = requests.get(media_url, headers=headers)
+    media_req.raise_for_status()
+    
+    return media_req.content

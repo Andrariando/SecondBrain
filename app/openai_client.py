@@ -42,3 +42,39 @@ def call_llm_json(system_prompt: str, user_prompt: str, provider: str = "openai"
         return json.loads(content)
     
     raise ValueError(f"Unknown provider: {provider}")
+
+def transcribe_audio(audio_bytes: bytes, filename: str = "audio.ogg") -> str:
+    """Uses OpenAI's Whisper model to transcribe audio bytes."""
+    # The OpenAI API requires a tuple of (filename, bytes) or a file-like object with a name attribute.
+    file_tuple = (filename, audio_bytes)
+    response = openai_client.audio.transcriptions.create(
+        model="whisper-1",
+        file=file_tuple
+    )
+    return response.text
+
+import base64
+def analyze_image(image_bytes: bytes, caption: str = "") -> str:
+    """Uses GPT-4o Vision to analyze an image."""
+    base64_image = base64.b64encode(image_bytes).decode('utf-8')
+    prompt = f"Analyze this image. Caption provided by user: '{caption}'. Please extract any text and explain what you see." if caption else "Analyze this image. Extract any text and explain what you see."
+    
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt},
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_image}"
+                        }
+                    }
+                ]
+            }
+        ],
+        max_tokens=1000
+    )
+    return response.choices[0].message.content

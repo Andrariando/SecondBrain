@@ -34,6 +34,9 @@ def process_whatsapp_message(phone_number: str, message_text: str):
 
 @router.post("/whatsapp")
 async def receive_whatsapp_message(request: Request, background_tasks: BackgroundTasks):
+    from app.whatsapp import download_whatsapp_media
+    from app.openai_client import transcribe_audio, analyze_image
+    
     payload = await request.json()
 
     print("\n--- Incoming Webhook Payload ---")
@@ -41,7 +44,6 @@ async def receive_whatsapp_message(request: Request, background_tasks: Backgroun
     print("--------------------------------\n")
 
     try:
-        # Extract message and phone number from Meta's payload structure
         entry = payload.get("entry", [])[0]
         changes = entry.get("changes", [])[0]
         value = changes.get("value", {})
@@ -49,11 +51,35 @@ async def receive_whatsapp_message(request: Request, background_tasks: Backgroun
         
         if messages:
             message = messages[0]
-            if message.get("type") == "text":
-                phone_number = message.get("from")
+            phone_number = message.get("from")
+            msg_type = message.get("type")
+            
+            message_text = None
+            
+            if msg_type == "text":
                 message_text = message.get("text", {}).get("body")
                 
-                # Pass to LangGraph in background to quickly return 200 OK to Meta
+            elif msg_type == "audio":
+                audio_id = message.get("audio", {}).get("id")
+                if audio_id:
+                    print(f"Downloading audio {audio_id}...")
+                    audio_bytes = download_whatsapp_media(audio_id)
+                    print("Transcribing audio...")
+                    message_text = transcribe_audio(audio_bytes)
+                    message_text = f"[Transcribed Voice Note]: {message_text}"
+                    
+            elif msg_type == "image":
+                image_info = message.get("image", {})
+                image_id = image_info.get("id")
+                caption = image_info.get("caption", "")
+                if image_id:
+                    print(f"Downloading image {image_id}...")
+                    image_bytes = download_whatsapp_media(image_id)
+                    print("Analyzing image...")
+                    analysis = analyze_image(image_bytes, caption)
+                    message_text = f"[Image Upload Analysis]: {analysis}"
+
+            if message_text:
                 background_tasks.add_task(process_whatsapp_message, phone_number, message_text)
                 
     except Exception as e:
