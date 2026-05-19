@@ -8,7 +8,7 @@ import statistics
 import json
 from bs4 import BeautifulSoup
 from langchain_core.tools import tool
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 from app.vector_db import get_knowledge_collection
 from app.db import SessionLocal
 from app.models import Memory, ActionItem, Idea

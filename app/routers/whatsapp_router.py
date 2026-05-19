@@ -25,12 +25,24 @@ async def verify_webhook(request: Request):
 def process_whatsapp_message(phone_number: str, message_text: str):
     from langchain_core.messages import HumanMessage
     print(f"Processing message from {phone_number}: {message_text}")
-    initial_state = {"messages": [HumanMessage(content=message_text)], "phone_number": phone_number}
-    result = app_graph.invoke(initial_state)
-    
-    reply_text = result.get("reply_message")
-    if reply_text:
-        send_whatsapp_message(phone_number, reply_text)
+    try:
+        initial_state = {"messages": [HumanMessage(content=message_text)], "phone_number": phone_number}
+        result = app_graph.invoke(initial_state)
+
+        reply_text = result.get("reply_message")
+        if reply_text:
+            try:
+                send_whatsapp_message(phone_number, reply_text)
+            except Exception as send_err:
+                # Log the send failure but DO NOT crash the background task or ASGI server.
+                # A common cause is an expired WHATSAPP_ACCESS_TOKEN (code 190).
+                # Fix: Get a fresh token from https://developers.facebook.com and update your .env
+                print(f"[WhatsApp Send Error] Failed to deliver reply to {phone_number}: {send_err}")
+                print("[Hint] If you see 'OAuthException code 190', your WHATSAPP_ACCESS_TOKEN has expired.")
+        else:
+            print("[Warning] Agent produced no reply message.")
+    except Exception as e:
+        print(f"[Agent Error] Unhandled exception while processing message: {e}")
 
 @router.post("/whatsapp")
 async def receive_whatsapp_message(request: Request, background_tasks: BackgroundTasks):
