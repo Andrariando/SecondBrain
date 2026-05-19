@@ -162,6 +162,26 @@ function openArticle(id) {
     const htmlContent = marked.parse(memory.content);
     document.getElementById('article-body').innerHTML = htmlContent;
 
+    // Fetch Related Pages
+    if (memory.type === 'knowledge') {
+        fetch(`/api/memories/${id}/related`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.related && data.related.length > 0) {
+                    let relatedHtml = `
+                        <div class="related-section">
+                            <div class="related-title">🔗 Connected Knowledge</div>
+                            <div class="related-tags">
+                                ${data.related.map(r => `<div class="related-tag" onclick="openArticle('${r.id}')">📄 ${r.title}</div>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('article-body').innerHTML += relatedHtml;
+                }
+            })
+            .catch(err => console.error("Error fetching related:", err));
+    }
+
     // Handle PDF Embedding
     const pdfPane = document.getElementById('pdf-pane');
     const pdfIframe = document.getElementById('pdf-iframe');
